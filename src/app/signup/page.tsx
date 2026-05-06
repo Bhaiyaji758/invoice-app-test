@@ -115,7 +115,7 @@ export default function SignupPage() {
         formData.append("logo", logoFile);
       }
 
-      const res = await apiPost<SignupResponse>("/api/auth/signup", formData, false);
+      const res = await apiPost<SignupResponse>("/Auth/Signup", formData, false);
       setAuthContext(res.token, res.user, res.company, true);
       router.push("/invoices");
     } catch (err) {

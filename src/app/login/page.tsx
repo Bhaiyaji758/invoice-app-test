@@ -72,7 +72,7 @@ export default function LoginPage() {
         rememberMe,
       };
       const res = await apiPost<LoginResponse>(
-        "/account/login/post",
+        "/Auth/Login",
         body,
         false
       );

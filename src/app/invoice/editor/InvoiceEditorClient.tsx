@@ -101,7 +101,7 @@ export default function InvoiceEditorClient() {
   useEffect(() => {
     const loadLookup = async () => {
       try {
-        const res = await apiGet<LookupItem[]>("/item/getlookuplist");
+        const res = await apiGet<LookupItem[]>("/Item/GetLookupList");
         setItemsLookup(res);
       } catch {
         // ignore
@@ -114,7 +114,7 @@ export default function InvoiceEditorClient() {
     if (!invoiceID) return;
     const loadInvoice = async () => {
       try {
-        const res = await apiGet<any>(`/invoice/getlist?invoiceID=${invoiceID}`);
+        const res = await apiGet<any>(`/Invoice/GetList?InvoiceID=${invoiceID}`);
         const row = Array.isArray(res) ? res[0] : res;
         if (!row) return;
         setHeader({
@@ -294,7 +294,7 @@ export default function InvoiceEditorClient() {
           discountPct: l.discountPct,
         })),
       };
-      const res = await apiPost<SaveResponse>("/invoice/insertupdate", body);
+      const res = await apiPost<SaveResponse>("/Invoice", body);
       setHeader((prev) => ({
         ...prev,
         invoiceID: res.invoiceID,

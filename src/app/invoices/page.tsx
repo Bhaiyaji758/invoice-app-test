@@ -89,8 +89,8 @@ export default function InvoicesPage() {
     setLoadingCards(true);
     try {
       const [listRes, metricsRes] = await Promise.all([
-        apiGet<InvoiceRow[]>(`/invoice/getlist${query}`),
-        apiGet<MetricsResponse>(`/invoice/getmetrics${query}`),
+        apiGet<InvoiceRow[]>(`/Invoice/GetList${query}`),
+        apiGet<MetricsResponse>(`/Invoice/GetMetrices${query}`),
       ]);
       setList(listRes);
       setMetrics(metricsRes);
@@ -105,7 +105,7 @@ export default function InvoicesPage() {
   const fetchTrend = async () => {
     setLoadingTrend(true);
     try {
-      const res = await apiGet<TrendPoint[]>("/invoice/gettrend12m");
+      const res = await apiGet<TrendPoint[]>("/Invoice/GetTrend12m");
       setTrend(res);
     } catch {
       // ignore
@@ -118,7 +118,7 @@ export default function InvoicesPage() {
     const query = `?from=${from ?? ""}&to=${to ?? ""}`;
     setLoadingTop(true);
     try {
-      const res = await apiGet<TopItem[]>(`/invoice/topitems${query}`);
+      const res = await apiGet<TopItem[]>(`/Invoice/TopItems${query}`);
       setTopItems(res);
     } catch {
       // ignore
@@ -190,7 +190,7 @@ export default function InvoicesPage() {
 
   const handleDelete = async (id: number) => {
     try {
-      await apiPost<{ ok: boolean }>("/invoice/delete", { invoiceID: id });
+      await apiPost<{ ok: boolean }>("/Invoice", { invoiceID: id });
       setList((prev) => prev.filter((i) => i.invoiceID !== id));
       if (fromDate && toDate) {
         fetchListAndMetrics(fromDate, toDate);

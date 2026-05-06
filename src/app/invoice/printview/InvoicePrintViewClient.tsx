@@ -21,7 +21,7 @@ export default function InvoicePrintViewClient() {
     const load = async () => {
       try {
         const res = await apiGet<PrintResponse>(
-          `/invoice/printview?invoiceID=${invoiceID}`
+          `/Invoice/PrintView?InvoiceID=${invoiceID}`
         );
         if (res.url) {
           window.location.href = res.url;

@@ -49,7 +49,7 @@ export default function ItemsPage() {
     setLoading(true);
     try {
       const query = itemID ? `?itemID=${itemID}` : "";
-      const res = await apiGet<ItemRow[]>(`/item/getlist${query}`);
+      const res = await apiGet<ItemRow[]>(`/Item/GetList${query}`);
       if (itemID && res.length === 1) {
         setItems((prev) => {
           const existing = prev.findIndex((i) => i.itemID === itemID);
@@ -98,7 +98,7 @@ export default function ItemsPage() {
   const handleDelete = async () => {
     if (!confirmDeleteId) return;
     try {
-      await apiPost<{ ok: boolean }>("/item/delete", { itemID: confirmDeleteId });
+      await apiPost<{ ok: boolean }>("/Item", { itemID: confirmDeleteId });
       setItems((prev) => prev.filter((i) => i.itemID !== confirmDeleteId));
     } catch (err) {
       const apiErr = err as ApiError;
@@ -356,7 +356,7 @@ function ItemEditorDialog({ open, onClose, item, onSaved }: ItemEditorDialogProp
         updatedOnPrev: item?.updatedOn ?? null,
       };
       const res = await apiPost<InsertUpdateResponse>(
-        "/item/insertupdate",
+        "/Item",
         body
       );
       onSaved(res);
