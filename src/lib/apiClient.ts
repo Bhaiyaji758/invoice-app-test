@@ -98,6 +98,7 @@ export function getAuthCompany(): AuthCompany | null {
 export async function apiGet<T>(path: string, withAuth = true): Promise<T> {
   const headers: HeadersInit = {
     "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true",
   };
 
   if (withAuth) {
@@ -119,7 +120,9 @@ export async function apiPost<T>(
   body: any,
   withAuth = true
 ): Promise<T> {
-  const headers: HeadersInit = {};
+  const headers: HeadersInit = {
+    "ngrok-skip-browser-warning": "true",
+  };
   if (withAuth) {
     const token = getAuthToken();
     if (token) {

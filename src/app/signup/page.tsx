@@ -73,8 +73,9 @@ export default function SignupPage() {
     if (!form.city.trim()) {
       nextErrors.city = "Please enter city.";
     }
-    if (!/^\d{6}$/.test(form.zip.trim())) {
-      nextErrors.zip = "Zip must be exactly 6 digits.";
+    // TODO: Add support for 6 digit zip codes but in backend we are using 5 digit zip codes.
+    if (!/^\d{5}$/.test(form.zip.trim())) {
+      nextErrors.zip = "Zip must be exactly 5 digits.";
     }
     if (!form.currencySymbol.trim() || form.currencySymbol.trim().length > 5) {
       nextErrors.currencySymbol = "Enter a valid currency symbol.";

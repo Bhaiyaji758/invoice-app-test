@@ -47,6 +47,23 @@ interface TopItem {
 
 const PIE_COLORS = ["#1976d2", "#9c27b0", "#ff9800", "#4caf50", "#ef5350", "#90a4ae"];
 
+function toNumber(value: unknown, fallback = 0): number {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return fallback;
+}
+
+function normalizeMetrics(input: any): MetricsResponse {
+  const source = Array.isArray(input) ? input[0] : input;
+  return {
+    invoiceCount: toNumber(source?.invoiceCount ?? source?.InvoiceCount ?? source?.count),
+    totalAmount: toNumber(source?.totalAmount ?? source?.TotalAmount ?? source?.amount),
+  };
+}
+
 export default function InvoicesPage() {
   const router = useRouter();
   const company = getAuthCompany();
@@ -90,12 +107,13 @@ export default function InvoicesPage() {
     try {
       const [listRes, metricsRes] = await Promise.all([
         apiGet<InvoiceRow[]>(`/Invoice/GetList${query}`),
-        apiGet<MetricsResponse>(`/Invoice/GetMetrices${query}`),
+        apiGet<any>(`/Invoice/GetMetrices${query}`),
       ]);
-      setList(listRes);
-      setMetrics(metricsRes);
+      setList(Array.isArray(listRes) ? listRes : []);
+      setMetrics(normalizeMetrics(metricsRes));
     } catch (err) {
-      // silent; UI will just show zero/empty
+      setList([]);
+      setMetrics({ invoiceCount: 0, totalAmount: 0 });
     } finally {
       setLoadingList(false);
       setLoadingCards(false);
@@ -106,9 +124,9 @@ export default function InvoicesPage() {
     setLoadingTrend(true);
     try {
       const res = await apiGet<TrendPoint[]>("/Invoice/GetTrend12m");
-      setTrend(res);
+      setTrend(Array.isArray(res) ? res : []);
     } catch {
-      // ignore
+      setTrend([]);
     } finally {
       setLoadingTrend(false);
     }
@@ -119,9 +137,9 @@ export default function InvoicesPage() {
     setLoadingTop(true);
     try {
       const res = await apiGet<TopItem[]>(`/Invoice/TopItems${query}`);
-      setTopItems(res);
+      setTopItems(Array.isArray(res) ? res : []);
     } catch {
-      // ignore
+      setTopItems([]);
     } finally {
       setLoadingTop(false);
     }
@@ -443,11 +461,13 @@ export default function InvoicesPage() {
             sx={{
               flex: 1.5,
               minWidth: 260,
+              width: { xs: "100%", md: "auto" },
               p: 2,
               bgcolor: "background.paper",
               borderRadius: 2,
               boxShadow: 1,
               height: 180,
+              overflow: "hidden",
             }}
           >
             <Typography variant="subtitle2" gutterBottom>
@@ -505,11 +525,13 @@ export default function InvoicesPage() {
             sx={{
               flex: 1.2,
               minWidth: 260,
+              width: { xs: "100%", md: "auto" },
               p: 2,
               bgcolor: "background.paper",
               borderRadius: 2,
               boxShadow: 1,
               height: 180,
+              overflow: "hidden",
             }}
           >
             <Typography variant="subtitle2" gutterBottom>
