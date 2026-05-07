@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
-import { ApiError, apiGet, apiPost, getAuthCompany } from "@/lib/apiClient";
+import { ApiError, apiGet, apiPost, apiDelete, getAuthCompany } from "@/lib/apiClient";
 import { LineChart, Line, XAxis, YAxis, Tooltip as ReTooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { useRouter } from "next/navigation";
 
@@ -208,7 +208,7 @@ export default function InvoicesPage() {
 
   const handleDelete = async (id: number) => {
     try {
-      await apiPost<{ ok: boolean }>("/Invoice", { invoiceID: id });
+      await apiDelete<{ ok: boolean }>(`/Invoice/${id}`);
       setList((prev) => prev.filter((i) => i.invoiceID !== id));
       if (fromDate && toDate) {
         fetchListAndMetrics(fromDate, toDate);

@@ -145,3 +145,28 @@ export async function apiPost<T>(
   return handleResponse<T>(res);
 }
 
+export async function apiDelete<T>(
+  path: string,
+  body?: any,
+  withAuth = true
+): Promise<T> {
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true",
+  };
+
+  if (withAuth) {
+    const token = getAuthToken();
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+  }
+
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    method: "DELETE",
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  return handleResponse<T>(res);
+}
+
