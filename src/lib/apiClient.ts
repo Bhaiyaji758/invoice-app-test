@@ -123,6 +123,13 @@ export async function apiPost<T>(
   const headers: HeadersInit = {
     "ngrok-skip-browser-warning": "true",
   };
+  const isFormData = body instanceof FormData;
+
+  // Send JSON content type for JSON payloads; let browser set multipart boundary for FormData.
+  if (!isFormData) {
+    headers["Content-Type"] = "application/json";
+  }
+
   if (withAuth) {
     const token = getAuthToken();
     if (token) {
@@ -133,7 +140,7 @@ export async function apiPost<T>(
   const res = await fetch(`${API_BASE_URL}${path}`, {
     method: "POST",
     headers,
-    body: body instanceof FormData ? body : JSON.stringify(body),
+    body: isFormData ? body : JSON.stringify(body),
   });
   return handleResponse<T>(res);
 }

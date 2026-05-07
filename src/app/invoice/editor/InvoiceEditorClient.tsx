@@ -424,7 +424,7 @@ export default function InvoiceEditorClient() {
               {errors.lines}
             </Typography>
           )}
-          <Stack spacing={1}>
+          <Stack spacing={1} sx={{ alignItems: "flex-start" }}>
             {lines.map((line, index) => (
               <Box
                 key={line.rowNo}
@@ -444,6 +444,13 @@ export default function InvoiceEditorClient() {
                   onChange={(e) =>
                     handleLineChange(index, "itemID", e.target.value)
                   }
+                  fullWidth={false}
+                  disabled={itemsLookup.length === 0}
+                  helperText={
+                    itemsLookup.length === 0
+                      ? "No items found. Please add items from /items."
+                      : undefined
+                  }
                   sx={{ minWidth: 180 }}
                 >
                   <option value=""></option>
@@ -459,7 +466,8 @@ export default function InvoiceEditorClient() {
                   onChange={(e) =>
                     handleLineChange(index, "description", e.target.value)
                   }
-                  sx={{ flex: 1 }}
+                  fullWidth={false}
+                  sx={{ flex: 1, minWidth: 160 }}
                 />
                 <TextField
                   label="Qty"
@@ -468,6 +476,7 @@ export default function InvoiceEditorClient() {
                   onChange={(e) =>
                     handleLineChange(index, "quantity", e.target.value)
                   }
+                  fullWidth={false}
                   sx={{ width: 100 }}
                 />
                 <TextField
@@ -477,6 +486,7 @@ export default function InvoiceEditorClient() {
                   onChange={(e) =>
                     handleLineChange(index, "rate", e.target.value)
                   }
+                  fullWidth={false}
                   sx={{ width: 120 }}
                 />
                 <TextField
@@ -486,12 +496,14 @@ export default function InvoiceEditorClient() {
                   onChange={(e) =>
                     handleLineChange(index, "discountPct", e.target.value)
                   }
+                  fullWidth={false}
                   sx={{ width: 100 }}
                 />
                 <TextField
                   label="Amount"
                   value={`${currency} ${line.amount.toFixed(2)}`}
                   slotProps={{ input: { readOnly: true } }}
+                  fullWidth={false}
                   sx={{ width: 150 }}
                 />
                 <IconButton
