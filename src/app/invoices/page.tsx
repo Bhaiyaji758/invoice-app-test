@@ -7,6 +7,12 @@ import {
   Stack,
   TextField,
   Typography,
+  Snackbar,
+  Alert,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
@@ -83,6 +89,22 @@ export default function InvoicesPage() {
   const [loadingTrend, setLoadingTrend] = useState(false);
   const [loadingTop, setLoadingTop] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [toast, setToast] = useState<{
+    open: boolean;
+    message: string;
+    severity: "success" | "error";
+  }>({ open: false, message: "", severity: "success" });
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("print") === "true") {
+      const timer = setTimeout(() => {
+        window.print();
+      }, 1500); // Give it time to load charts
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const todayISO = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
@@ -206,16 +228,29 @@ export default function InvoicesPage() {
     );
   }, [list, search]);
 
-  const handleDelete = async (id: number) => {
+  const showToast = (message: string, severity: "success" | "error" = "success") => {
+    setToast({ open: true, message, severity });
+  };
+
+  const handleCloseToast = () => {
+    setToast((prev) => ({ ...prev, open: false }));
+  };
+
+  const handleDelete = async () => {
+    if (confirmDeleteId === null) return;
+    const id = confirmDeleteId;
+    setConfirmDeleteId(null);
     try {
       await apiDelete<{ ok: boolean }>(`/Invoice/${id}`);
-      setList((prev) => prev.filter((i) => i.invoiceID !== id));
+      showToast("Invoice deleted successfully.");
       if (fromDate && toDate) {
         fetchListAndMetrics(fromDate, toDate);
+        fetchTrend();
         fetchTopItems(fromDate, toDate);
       }
-    } catch {
-      // silently ignore here; spec just says small banner, which we omit
+    } catch (err) {
+      const apiErr = err as ApiError;
+      showToast(apiErr.message || "Could not delete invoice.", "error");
     }
   };
 
@@ -328,7 +363,7 @@ export default function InvoicesPage() {
             size="small"
             onClick={() =>
               window.open(
-                `/invoice/printview?invoiceID=${params.row.invoiceID}`,
+                `/invoices?print=true`,
                 "_blank"
               )
             }
@@ -338,7 +373,7 @@ export default function InvoicesPage() {
           <Button
             size="small"
             color="error"
-            onClick={() => handleDelete(params.row.invoiceID)}
+            onClick={() => setConfirmDeleteId(params.row.invoiceID)}
           >
             Delete
           </Button>
@@ -369,12 +404,12 @@ export default function InvoicesPage() {
                     key === "today"
                       ? "Today"
                       : key === "week"
-                      ? "Week"
-                      : key === "month"
-                      ? "Month"
-                      : key === "year"
-                      ? "Year"
-                      : "Custom"
+                        ? "Week"
+                        : key === "month"
+                          ? "Month"
+                          : key === "year"
+                            ? "Year"
+                            : "Custom"
                   }
                   color={range === key ? "primary" : "default"}
                   onClick={() => {
@@ -449,9 +484,9 @@ export default function InvoicesPage() {
               {loadingCards || !metrics
                 ? "-"
                 : `${currency} ${metrics.totalAmount.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}`}
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               In selected range
@@ -596,18 +631,18 @@ export default function InvoicesPage() {
             sx={{ maxWidth: 320 }}
           />
           <Stack direction="row" spacing={1}>
-            <Button
+            {/* <Button
               variant="outlined"
               disabled
             >
               Export
-            </Button>
-            <Button
+            </Button> */}
+            {/* <Button
               variant="outlined"
               disabled
             >
               Column Chooser
-            </Button>
+            </Button> */}
             <Button onClick={() => router.push("/invoice/editor")}>
               New Invoice
             </Button>
@@ -651,6 +686,35 @@ export default function InvoicesPage() {
           />
         </Box>
       </Stack>
+
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={4000}
+        onClose={handleCloseToast}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert onClose={handleCloseToast} severity={toast.severity} sx={{ width: "100%" }}>
+          {toast.message}
+        </Alert>
+      </Snackbar>
+
+      <Dialog
+        open={confirmDeleteId !== null}
+        onClose={() => setConfirmDeleteId(null)}
+      >
+        <DialogTitle>Delete Invoice</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete this invoice? This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDeleteId(null)}>Cancel</Button>
+          <Button color="error" onClick={handleDelete} variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

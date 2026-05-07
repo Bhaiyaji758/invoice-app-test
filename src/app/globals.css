@@ -47,3 +47,26 @@ a {
     color-scheme: dark;
   }
 }
+
+@media print {
+  .no-print,
+  button,
+  .MuiButton-root,
+  .MuiIconButton-root,
+  .MuiInputBase-root,
+  .MuiDataGrid-footerContainer,
+  .MuiDataGrid-columnSeparator {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .MuiBox-root {
+    box-shadow: none !important;
+    border: none !important;
+  }
+}

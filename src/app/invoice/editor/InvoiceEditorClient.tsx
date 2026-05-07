@@ -7,6 +7,10 @@ import {
   TextField,
   Typography,
   IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -97,6 +101,7 @@ export default function InvoiceEditorClient() {
     lines?: string;
     server?: string;
   }>({});
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   useEffect(() => {
     const loadLookup = async () => {
@@ -134,23 +139,23 @@ export default function InvoiceEditorClient() {
         setLines(
           row.lines && row.lines.length
             ? row.lines.map((l: any) => ({
-                ...l,
-                quantity: Number(l.quantity) || 0,
-                rate: Number(l.rate) || 0,
-                discountPct: Number(l.discountPct) || 0,
-                amount: Number(l.amount) || 0,
-              }))
+              ...l,
+              quantity: Number(l.quantity) || 0,
+              rate: Number(l.rate) || 0,
+              discountPct: Number(l.discountPct) || 0,
+              amount: Number(l.amount) || 0,
+            }))
             : [
-                {
-                  rowNo: 1,
-                  itemID: null,
-                  description: "",
-                  quantity: 0,
-                  rate: 0,
-                  discountPct: 0,
-                  amount: 0,
-                },
-              ]
+              {
+                rowNo: 1,
+                itemID: null,
+                description: "",
+                quantity: 0,
+                rate: 0,
+                discountPct: 0,
+                amount: 0,
+              },
+            ]
         );
       } catch {
         // ignore; keep blank
@@ -346,7 +351,7 @@ export default function InvoiceEditorClient() {
         >
           <Typography variant="h5">{title}</Typography>
           <Stack direction="row" spacing={1}>
-            <Button variant="text" onClick={() => router.push("/invoices")}>
+            <Button variant="text" onClick={() => setShowCancelConfirm(true)}>
               Cancel
             </Button>
             <Button onClick={handleSave} disabled={saving}>
@@ -567,7 +572,7 @@ export default function InvoiceEditorClient() {
                   })}
                 </Typography>
               </Box>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              {/* <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <TextField
                   label="Tax %"
                   type="number"
@@ -586,7 +591,7 @@ export default function InvoiceEditorClient() {
                   onFocus={(e) => e.target.select()}
                   sx={{ width: 160 }}
                 />
-              </Box>
+              </Box> */}
               <Box
                 sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}
               >
@@ -608,6 +613,28 @@ export default function InvoiceEditorClient() {
           </Box>
         </Box>
       </Stack>
+
+      <Dialog
+        open={showCancelConfirm}
+        onClose={() => setShowCancelConfirm(false)}
+      >
+        <DialogTitle>Discard Changes?</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to cancel? Any unsaved changes will be lost.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowCancelConfirm(false)}>Stay</Button>
+          <Button
+            onClick={() => router.push("/invoices")}
+            color="error"
+            variant="contained"
+          >
+            Discard
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
