@@ -21,7 +21,7 @@ export default function InvoicePrintViewClient() {
     const load = async () => {
       try {
         const res = await apiGet<PrintResponse>(
-          `/Invoice/PrintView?InvoiceID=${invoiceID}`
+          ` =${invoiceID}`
         );
         if (res.url) {
           window.location.href = res.url;
@@ -37,6 +37,15 @@ export default function InvoicePrintViewClient() {
     };
     load();
   }, [invoiceID]);
+
+  useEffect(() => {
+    if (html) {
+      const timer = setTimeout(() => {
+        window.print();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [html]);
 
   if (error) {
     return <Box sx={{ p: 2 }}>{error}</Box>;

@@ -483,7 +483,7 @@ export default function InvoiceEditorClient() {
                 <TextField
                   label="Qty"
                   type="number"
-                  value={line.quantity === 0 ? "" : line.quantity}
+                  value={line.quantity === 0 ? "" : (line.quantity ?? "")}
                   onChange={(e) =>
                     handleLineChange(index, "quantity", e.target.value)
                   }
@@ -494,7 +494,7 @@ export default function InvoiceEditorClient() {
                 <TextField
                   label="Rate"
                   type="number"
-                  value={line.rate === 0 ? "" : line.rate}
+                  value={line.rate === 0 ? "" : (line.rate ?? "")}
                   onChange={(e) =>
                     handleLineChange(index, "rate", e.target.value)
                   }
@@ -505,7 +505,7 @@ export default function InvoiceEditorClient() {
                 <TextField
                   label="Disc %"
                   type="number"
-                  value={line.discountPct === 0 ? "" : line.discountPct}
+                  value={line.discountPct === 0 ? "" : (line.discountPct ?? "")}
                   onChange={(e) =>
                     handleLineChange(index, "discountPct", e.target.value)
                   }
@@ -571,7 +571,7 @@ export default function InvoiceEditorClient() {
                 <TextField
                   label="Tax %"
                   type="number"
-                  value={header.taxPercentage === 0 ? "" : header.taxPercentage}
+                  value={header.taxPercentage === 0 ? "" : (header.taxPercentage ?? "")}
                   onChange={(e) =>
                     handleTaxChange("taxPercentage", e.target.value)
                   }
@@ -581,7 +581,7 @@ export default function InvoiceEditorClient() {
                 <TextField
                   label="Tax Amt"
                   type="number"
-                  value={header.taxAmount === 0 ? "" : header.taxAmount}
+                  value={header.taxAmount === 0 ? "" : (header.taxAmount ?? "")}
                   onChange={(e) => handleTaxChange("taxAmount", e.target.value)}
                   onFocus={(e) => e.target.select()}
                   sx={{ width: 160 }}
